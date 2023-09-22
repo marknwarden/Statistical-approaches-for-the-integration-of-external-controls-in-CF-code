@@ -1,0 +1,109 @@
+
+  model{
+
+  for (i in 1:N) {
+  y[i] ~ dpois(lambda[i])
+  log(lambda[i]) <- mu[i]
+  mu[i] <- b0[study[i]] + be*E[i] + b1[study[i]]*x1[i] + b2[study[i]]*x2[i] + b3[study[i]]*x3[i] + b4[study[i]]*x4[i] + b5[study[i]]*x5[i] + b6[study[i]]*x6[i] + b7[study[i]]*x7[i] + b8[study[i]]*x8[i] + b9[study[i]]*x9[i] + b10[study[i]]*x10[i] + b11[study[i]]*x11[i] + b12[study[i]]*x12[i] + b13[study[i]]*x13[i] + b14[study[i]]*x14[i] + b15[study[i]]*x15[i] + log(time[i])
+  }
+
+  # Note for the study variable 1=historical 2=active
+  # Therefore beta[1] are historical parameters and betas[2] are active trial parameters
+
+  # Spike and slab hyper priors for tau
+  pi[1] ~ dbern(0.5)
+  pi[2] ~ dbern(0.5)
+  pi[3] ~ dbern(0.5)
+  pi[4] ~ dbern(0.5)
+  pi[5] ~ dbern(0.5)
+  pi[6] ~ dbern(0.5)
+  pi[7] ~ dbern(0.5)
+  pi[8] ~ dbern(0.5)
+  pi[9] ~ dbern(0.5)
+  pi[10] ~ dbern(0.5)
+  pi[11] ~ dbern(0.5)
+  pi[12] ~ dbern(0.5)
+  pi[13] ~ dbern(0.5)
+  pi[14] ~ dbern(0.5)
+  pi[15] ~ dbern(0.5)
+  pi[16] ~ dbern(0.5)
+
+
+  slab[1] ~ dunif(0.005,7)
+  slab[2] ~ dunif(0.005,9)
+  slab[3] ~ dunif(0.005,4)
+  slab[4] ~ dunif(0.005,19)
+  slab[5] ~ dunif(0.005,4)
+  slab[6] ~ dunif(0.005,17)
+  slab[7] ~ dunif(0.005,7)
+  slab[8] ~ dunif(0.005,2)
+  slab[9] ~ dunif(0.005,3)
+  slab[10] ~ dunif(0.005,3)
+  slab[11] ~ dunif(0.005,64)
+  slab[12] ~ dunif(0.005,18)
+  slab[13] ~ dunif(0.005,3)
+  slab[14] ~ dunif(0.005,13)
+  slab[15] ~ dunif(0.005,19)
+  slab[16] ~ dunif(0.005,13)
+
+
+  # Tau now is distributed as a mixture of the spike (at 200) and slab
+  # Even though tau is determinisitic (<-) it has the desired hyper prior distribution
+  tau[1] <- slab[1]*pi[1] + 14*(1-pi[1])
+  tau[2] <- slab[2]*pi[2] + 17*(1-pi[2])
+  tau[3] <- slab[3]*pi[3] + 7*(1-pi[3])
+  tau[4] <- slab[4]*pi[4] + 38*(1-pi[4])
+  tau[5] <- slab[5]*pi[5] + 7*(1-pi[5])
+  tau[6] <- slab[6]*pi[6] + 33*(1-pi[6])
+  tau[7] <- slab[7]*pi[7] + 13*(1-pi[7])
+  tau[8] <- slab[8]*pi[8] + 3*(1-pi[8])
+  tau[9] <- slab[9]*pi[9] + 5*(1-pi[9])
+  tau[10] <- slab[10]*pi[10] + 5*(1-pi[10])
+  tau[11] <- slab[11]*pi[11] + 127*(1-pi[11])
+  tau[12] <- slab[12]*pi[12] + 36*(1-pi[12])
+  tau[13] <- slab[13]*pi[13] + 5*(1-pi[13])
+  tau[14] <- slab[14]*pi[14] + 26*(1-pi[14])
+  tau[15] <- slab[15]*pi[15] + 38*(1-pi[15])
+  tau[16] <- slab[16]*pi[16] + 26*(1-pi[16])
+
+
+  # Vague normal prior's for historical parameters and treatment parameter (Note: [1] is Hx and [2] is active trial)
+  b0[1] ~ dnorm(0,1)
+  b1[1] ~ dnorm(0,1)  # Note that 1/10000 is precision or the inverse of the variance
+  b2[1] ~ dnorm(0,1)  # Meaning the variance is 10,000 and standard deviation is 100
+  b3[1] ~ dnorm(0,1)  # 5-31-23 Changing to weakly informative priors per Gelman prior blog advice
+  b4[1] ~ dnorm(0,1)
+  b5[1] ~ dnorm(0,1)
+  b6[1] ~ dnorm(0,1)
+  b7[1] ~ dnorm(0,1)
+  b8[1] ~ dnorm(0,1)
+  b9[1] ~ dnorm(0,1)
+  b10[1] ~ dnorm(0,1)
+  b11[1] ~ dnorm(0,1)
+  b12[1] ~ dnorm(0,1)
+  b13[1] ~ dnorm(0,1)
+  b14[1] ~ dnorm(0,1)
+  b15[1] ~ dnorm(0,1)
+  be ~ dnorm(0,1)
+
+  # Normal distribution around historical beta with tau precision (Note: [1] is Hx and [2] is active trial)
+  b0[2] ~ dnorm(b0[1],tau[1])
+  b1[2] ~ dnorm(b1[1],tau[2])
+  b2[2] ~ dnorm(b2[1],tau[3])
+  b3[2] ~ dnorm(b3[1],tau[4])
+  b4[2] ~ dnorm(b4[1],tau[5])
+  b5[2] ~ dnorm(b5[1],tau[6])
+  b6[2] ~ dnorm(b6[1],tau[7])
+  b7[2] ~ dnorm(b7[1],tau[8])
+  b8[2] ~ dnorm(b8[1],tau[9])
+  b9[2] ~ dnorm(b9[1],tau[10])
+  b10[2] ~ dnorm(b10[1],tau[11])
+  b11[2] ~ dnorm(b11[1],tau[12])
+  b12[2] ~ dnorm(b12[1],tau[13])
+  b13[2] ~ dnorm(b13[1],tau[14])
+  b14[2] ~ dnorm(b14[1],tau[15])
+  b15[2] ~ dnorm(b15[1],tau[16])
+
+  HR <- exp(be)
+  }
+  

@@ -1,0 +1,25 @@
+
+model{
+
+for (i in 1:N) {
+y1[i] ~ dbern(p[i])
+logit(p[i]) <- alpha + d*z1[i]
+}
+
+alpha ~ dnorm(prior.alpha.mean, prior.alpha.prec)
+
+prior.alpha.mean ~ dnorm(0,0.001)
+prior.alpha.prec ~ dgamma(0.001, 0.001)
+
+d~dunif(-100,100)
+
+alpha_ilogit <- ilogit(alpha)
+diff_ilogit <- ilogit(alpha+d) - alpha_ilogit
+ratio_ilogit <- ilogit(alpha+d) / alpha_ilogit
+HR <- (-log(1-ilogit(alpha+d))) / (-log(1-alpha_ilogit))
+be<-log(HR)
+
+}
+
+
+
